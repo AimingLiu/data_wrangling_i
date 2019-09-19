@@ -16,8 +16,7 @@ library(readxl)
 ## Load in a dataset
 
 ```{r}
-litters_data = read_csv(file = "./data_import_examples/FAS_litters.csv",
-  skip = 10, col_names = FALSE)
+litters_data = read_csv(file = "./data_import_examples/FAS_litters.csv")
 litters_data = janitor::clean_names(litters_data)
 ```
 
@@ -55,7 +54,48 @@ library(haven)
 pulse_data = read_sas("./data_import_examples/public_pulse_data.sas7bdat")
 ```
 
-```{r}
-mlb11_subset = read_excel(path = "./data_import_examples/mlb11.xlsx",range = "A1:D7")
 
+
+```{r}
+select(litters_data,group,litter_number)
+select(litters_data,group,litter_number,gd0_weight)
+```
+```{r}
+filter(litters_data,group =="Mod8")
+
+filter(litters_data, gd_of_birth == 20)
+
+filter(litters_data,gd_of_birth < 20)
+
+filter(litters_data,pups_born_alive < 6 ,group == "Con7")
+
+filter(litters_data,group == "Con7"|group == "Con8")
+
+#don't do filtter(litters_data,!is_na(gd0_weight))#
+#do#
+drop_na(litters_data,gd0_weight)
+```
+#Mutate
+```{r}
+mutate(litters_data,
+       wt_gain = gd18_weight - gd0_weight,
+       group = str_to_lower(group))
+```
+#Arrange
+```{r}
+arrange(litters_data,pups_born_alive)
+
+arrange(litters_data,desc(pups_born_alive))
+
+arrange(litters_data,pups_born_alive,gd0_weight)
+```
+
+```{r}
+litters_data = 
+  read_csv("./data_import_examples/FAS_litters.csv") %>%
+  janitor::clean_names() %>%
+  select(-pups_survive) %>%
+  mutate(wt_gain = gd18_weight - gd0_weight,
+       group = str_to_lower(group)) %>%
+  drop_na(gd0_weight)
 ```
